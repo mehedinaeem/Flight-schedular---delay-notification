@@ -1,7 +1,6 @@
 # main.py
 from flight import search_flight
 from user import book_flight
-import smt  # Import your smt module
 
 def main():
     while True:
