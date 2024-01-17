@@ -3,8 +3,8 @@ import sys
 from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QPushButton, QLabel, QLineEdit, QTextEdit, QInputDialog, QHBoxLayout, QFormLayout, QDateEdit, QCompleter
 from PyQt5.QtGui import QIcon, QTextCharFormat
 from PyQt5.QtCore import Qt, QDate, QStringListModel
-from code.flight import search_flight
-from code.user import book_flight
+from flight import search_flight
+from user import book_flight
 import csv
 
 
@@ -21,6 +21,7 @@ class FlightScheduler(QWidget):
 
         main_layout = QHBoxLayout()
 
+        # Background set
         self.setAutoFillBackground(True)
         palette = self.palette()
         palette.setColor(self.backgroundRole(), Qt.gray)
@@ -34,16 +35,20 @@ class FlightScheduler(QWidget):
         departure_airport_completer = QCompleter()
         departure_airport_completer.setModel(departure_airport_model)
 
+
+        # departure airport
         self.label_airport = QLabel("Enter departure airport (e.g., DAC): ")
         self.input_airport = QLineEdit()
         self.input_airport.setStyleSheet(
             "background-color:#9EAE9D; color:black;font-size:25px")
         self.input_airport.setFixedSize(200, 30)
+        
         # Set completer for departure airport suggestions
         self.input_airport.setCompleter(departure_airport_completer)
         left_layout.setFormAlignment(Qt.AlignTop)
         left_layout.setLabelAlignment(Qt.AlignRight)
         left_layout.addRow(self.label_airport, self.input_airport)
+        
 
         # Create a QStringListModel for destination airport suggestions
         destination_airport_model = QStringListModel()
@@ -74,6 +79,8 @@ class FlightScheduler(QWidget):
             "background-color:#9EAE9D; color:black;font-size:25px")
         left_layout.addRow(self.label_date, self.input_date)
 
+
+        #    search flight button
         self.button_search = QPushButton("Search Flight")
         self.button_search.setStyleSheet(
             "background-color:#A447D7; color:black;font-size:20px")
@@ -104,19 +111,7 @@ class FlightScheduler(QWidget):
         # Load airport suggestions from CSV file
         self.load_airport_suggestions()
 
-    # def load_airport_suggestions(self):
-    #     try:
-    #         with open(r'D:\Flight_Scheduler\use_gui\airports.csv', newline='', encoding='utf-8') as csvfile:
-    #             reader = csv.DictReader(csvfile)
-    #             airport_names = [row['iata_code'] for row in reader if row.get('iata_code')]
 
-    #             departure_airport_model = self.input_airport.completer().model()
-    #             departure_airport_model.setStringList(airport_names)
-
-    #             destination_airport_model = self.input_destination_airport.completer().model()
-    #             destination_airport_model.setStringList(airport_names)
-    #     except FileNotFoundError:
-    #         print("CSV file not found. Please make sure the file 'airports.csv' exists.")
 
     def load_airport_suggestions(self):
         try:
@@ -141,18 +136,12 @@ class FlightScheduler(QWidget):
         date_str = self.input_date.date().toString("yyyy-MM-dd")
         destination_airport = self.input_destination_airport.text()
 
-        # Convert only for searching, not for suggestions
+        
         flight_info = search_flight(
             departure_airport.upper(), date_str, destination_airport.upper())
         self.display_flight_info(flight_info)
 
-    # def search_flight_clicked(self):
-    #     departure_airport = self.input_airport.text()
-    #     date_str = self.input_date.date().toString("yyyy-MM-dd")
-    #     destination_airport = self.input_destination_airport.text()
-
-    #     flight_info = search_flight(departure_airport, date_str, destination_airport)
-    #     self.display_flight_info(flight_info)
+   
 
     def search_flight_clicked(self):
         departure_airport = self.input_airport.text().upper()
@@ -162,7 +151,9 @@ class FlightScheduler(QWidget):
         flight_info = search_flight(
             departure_airport, date_str, destination_airport)
         self.display_flight_info(flight_info)
-
+        
+        
+    # display flight information
     def display_flight_info(self, flight_info):
         self.text_flight_info.clear()
 

@@ -26,11 +26,11 @@ def search_flight(departure_airport, date_str, destination_airport=None):
         querystring["ArrivalAirport"] = destination_airport
 
     headers = {
-        # "X-RapidAPI-Key": "4cb961a223msh26181b7f2f5b205p1da763jsn1a17a4430b25",
+        # "X-RapidAPI-Key": "78310b8c57mshcf3285739dee2d8p1e00aajsn10f7a10af72f",
         # "X-RapidAPI-Host": "flight-info-api.p.rapidapi.com"
 
-        "X-RapidAPI-Key": "78310b8c57mshcf3285739dee2d8p1e00aajsn10f7a10af72f",
-        "X-RapidAPI-Host": "flight-info-api.p.rapidapi.com"
+        'X-RapidAPI-Key': 'caef7ec3d5mshdc125174597db07p13a68djsn7b31cb74238b',
+        'X-RapidAPI-Host': 'flight-info-api.p.rapidapi.com'
     }
 
     response = requests.get(url, headers=headers, params=querystring)
@@ -69,6 +69,32 @@ def search_flight(departure_airport, date_str, destination_airport=None):
                 flight_info += f"Aircraft Type: {aircraft_type}\n"
                 flight_info += f"Airline: {airline}\n"
                 flight_info += f"Estimated Time: {estimated_time} minutes\n"
+
+                # Extracting the 'statusDetails' field
+                status_details = flight.get('statusDetails', [])
+
+                # Check if there are status details available
+                if status_details:
+                    for status in status_details:
+                        # Get scheduled and actual departure times
+                        scheduled_departure = flight['departure']['time']['utc']
+
+                        # Use get method to handle potential missing keys
+                        actual_time_info = status.get('departure', {}).get(
+                            'actualTime', {}).get('offGround', {})
+                        actual_departure = actual_time_info.get(
+                            'utc', 'Not available')
+
+                        # Compare scheduled and actual times for departure
+                        # if scheduled_departure != actual_departure:
+                        #     flight_info += f"Delayed!\n"
+                        #     # flight_info += f"Scheduled Departure: {scheduled_departure}\n"
+                        #     # flight_info += f"Actual Departure: {actual_departure}\n"
+                        # else:
+                        #     flight_info += "The flight is on time.\n"
+                else:
+                    flight_info += "No status details available for this flight.\n"
+
                 flight_info += "-------------------------------\n"
 
             return flight_info
